@@ -1,7 +1,7 @@
 module Server where
 
 import Control.Monad
-import qualified Data.ByteString.Char8 as C
+import qualified ByteStringUtils as C
 import Network.Socket
 import System.IO
 

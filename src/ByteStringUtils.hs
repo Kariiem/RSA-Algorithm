@@ -1,11 +1,24 @@
+module ByteStringUtils
+  ( StrictByteString,
+    fromIntToString,
+    fromStringToInt,
+    C.hPutStrLn,
+    C.hGetLine,
+    C.getLine,
+    C.putStrLn,
+    C.putStr,
+    toByteString,
+    printToHandle,
+  )
+where
+
 import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Char8 as C
 import qualified Data.ByteString.Lazy.Char8 as LC
 import Data.Char
-import Data.STRef.Strict
-import Primes
+import System.IO
 
-type Key = (Integer, Integer)
+type StrictByteString = C.ByteString
 
 fromStringToInt :: C.ByteString -> Integer
 fromStringToInt = C.foldl' step 0
@@ -21,3 +34,9 @@ fromIntToString n =
       let (num_quot, num_rem) = num `quotRem` 256
           ch = C.singleton $ chr $ fromIntegral num_rem
        in (num_quot, B.byteString ch <> buildStr)
+
+toByteString :: Show a => a -> C.ByteString
+toByteString = C.pack . show
+
+printToHandle :: Show a => Handle -> a -> IO ()
+printToHandle hdl = C.hPutStrLn hdl . toByteString

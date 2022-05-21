@@ -1,9 +1,7 @@
 module Client where
 
+import qualified ByteStringUtils as C
 import Control.Monad
-import Data.Binary as B
-import qualified Data.ByteString.Char8 as C
-import qualified Data.ByteString.Lazy as BL
 import Network.Socket
 import Primes
 import RSA
@@ -23,8 +21,8 @@ runConn :: Socket -> IO ()
 runConn sock = do
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
-  let pubKey = genPrimes 4096
-  C.hPutStrLn hdl . C.pack . show $ pubKey
+  let pubKey = id 4096
+  C.hPutStrLn hdl $ C.toByteString pubKey
   readSocketWriteTerminalLooop hdl
   hClose hdl
 
