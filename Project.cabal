@@ -1,0 +1,39 @@
+cabal-version:      2.4
+name:               RSAProject
+version:            0.1.0.0
+synopsis:           RSA implementation, breforce attack, time measures
+license:            MIT
+author:             Kariiem
+maintainer:         Kariiem@github.com
+extra-source-files: CHANGELOG.md
+
+
+library internal
+  build-depends:    base ^>=4.14.3.0,bytestring,random,mtl,arithmoi
+  hs-source-dirs:   src
+  exposed-modules:  RSA,Primes 
+  default-language: Haskell2010
+
+executable Server
+    main-is:          Server.hs
+    default-extensions: OverloadedStrings
+    ghc-options:      -main-is Server
+    build-depends:    base ^>=4.14.3.0,internal,bytestring,network
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+executable Client
+    main-is:          Client.hs
+    default-extensions: OverloadedStrings
+    ghc-options:      -main-is Client
+    build-depends:    base ^>=4.14.3.0,internal,bytestring,network,binary
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+executable TestRSA
+    main-is:          TestRSA.hs
+    default-extensions: OverloadedStrings
+    build-depends:    base ^>=4.14.3.0,internal,bytestring, time, criterion
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
