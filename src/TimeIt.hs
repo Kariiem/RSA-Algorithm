@@ -1,4 +1,4 @@
-module TimeIt where
+module TimeIt (deepseq, timeItCPUTime, timeItWallTime) where
 
 import Control.DeepSeq
 import Criterion.Measurement

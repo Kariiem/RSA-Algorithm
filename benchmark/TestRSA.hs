@@ -6,8 +6,7 @@ import Primes
 import RSA
 import TimeIt
 
-
-numPasses = 50
+numPasses = 20
 
 maxKeysSize = 2048
 
@@ -17,7 +16,6 @@ testString =
 
 testStringInt :: Integer
 testStringInt = C.fromStringToInt testString
-
 
 main :: IO ()
 main = do
@@ -35,13 +33,13 @@ rsaEncryptionVsTime str nbits = runEncrypt str p q
 
 --benchMarks :: [(Int, Bool)]
 benchMarks :: [(Int, [C.StrictByteString])]
-benchMarks = zip keySizeList bench
+benchMarks = primePairs `deepseq` zip keySizeList bench
   where
     !smallestKeySize = countBits testStringInt
 
     !keySizeList = [smallestKeySize .. maxKeysSize]
 
-    !primePairs = [[genPrimePairs nbits | i <- [1 .. numPasses]] | nbits <- keySizeList]
+    primePairs = [[genPrimePairs nbits | i <- [1 .. numPasses]] | nbits <- keySizeList]
 
     bench =
       [ [encrypt testString e n | (p, q) <- primePairs !! (k - smallestKeySize), let ((e, n), (d, _)) = genKeys p q]
