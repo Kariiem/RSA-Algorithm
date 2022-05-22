@@ -1,2 +1,3 @@
 dist-newstyle/
 __pycache__/
+*.docx
