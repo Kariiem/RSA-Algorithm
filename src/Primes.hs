@@ -1,9 +1,13 @@
 module Primes
-  ( modInverse,
-    powMod,
+  ( isPrime,
+    genPrime,
+    genQ,
     genCoprime,
     genPrimePairs,
-    integerLog2',
+    countBits,
+    modInverse,
+    powMod,
+    integerSquareRoot,
   )
 where
 
@@ -11,6 +15,7 @@ import Control.Monad.State
 import GHC.IO (unsafePerformIO)
 import Math.NumberTheory.Logarithms
 import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Roots
 import System.Random
 
 type RandGen a = State StdGen a
@@ -20,6 +25,9 @@ randGen = initStdGen
 
 randGen' :: StdGen
 randGen' = mkStdGen 1
+
+countBits :: Integer -> Int
+countBits integer = 1 + integerLog2' integer
 
 -- | Takes boolean test `p`, range in the form of @ (lower,upper) @,
 --  generates random number statisfying `p` in the range @(lower,upper)@
@@ -40,7 +48,8 @@ genPrime nbits = generateOn isPrime (2 ^ (nbits -1), 2 ^ nbits -1)
 genPrimePairs :: Int -> (Integer, Integer)
 genPrimePairs nbits = (p, q)
   where
-    halfNbits = nbits `div` 2
+    nEbits = if even nbits then nbits else nbits + 1
+    halfNbits = nEbits `div` 2
     p = genPrime halfNbits
     -- q = head $ filter (\n -> (n /= p) && isPrime n) [2 ^ (halfNbits -1) .. 2 ^ halfNbits -1]
     q = genQ (2 ^ (halfNbits -1), p -1) (p + 1, 2 ^ halfNbits -1)
@@ -66,49 +75,17 @@ genQ (ll, lu) (rl, ru) = evalState generator $ unsafePerformIO randGen
     genNR =
       state $ uniformR (rl, ru)
 
-{-function inverse(a, n)
-    t := 0;     newt := 1
-    r := n;     newr := a
-
-    while newr ≠ 0 do
-        quotient := r div newr
-        (t, newt) := (newt, t − quotient × newt)
-        (r, newr) := (newr, r − quotient × newr)
-
-    if r > 1 then
-        return "a is not invertible"
-    if t < 0 then
-        t := t + n
-
-    return t
--}
-
 -- | @modInverse a n@ gives `b` such that @ ab congruent 1 mod n @
 modInverse :: Integer -> Integer -> Integer
 modInverse a n = extract $until check step (0, 1, n, a)
   where
     check (t, newt, r, newr) = newr <= 0
     extract (t, _, r, _)
-      --    | r > 1 = Nothing
-      | t < 0 = t + n --Just $ t + n
-      | otherwise = t --Just t
+      | t < 0 = t + n
+      | otherwise = t
     step (t, newt, r, newr) =
       let quotation = r `div` newr
        in (newt, t - quotation * newt, newr, r - quotation * newr)
-
-{-function modular_pow(base, exponent, modulus) is
-    if modulus = 1 then
-        return 0
-    Assert :: (modulus - 1) * (modulus - 1) does not overflow base
-    result := 1
-    base := base mod modulus
-    while exponent > 0 do
-        if (exponent mod 2 == 1) then
-            result := (result * base) mod modulus
-        exponent := exponent >> 1
-        base := (base * base) mod modulus
-    return result
--}
 
 powMod :: Integer -> Integer -> Integer -> Integer
 powMod a e n

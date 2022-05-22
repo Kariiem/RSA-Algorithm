@@ -7,8 +7,12 @@ module ByteStringUtils
     C.getLine,
     C.putStrLn,
     C.putStr,
+    C.pack,
+    C.unpack,
+    C.concat,
     toByteString,
     printToHandle,
+    processPlainText,
   )
 where
 
@@ -40,3 +44,14 @@ toByteString = C.pack . show
 
 printToHandle :: Show a => Handle -> a -> IO ()
 printToHandle hdl = C.hPutStrLn hdl . toByteString
+
+processPlainText :: C.ByteString -> Integer -> [C.ByteString]
+processPlainText str n
+  | fromStringToInt str < n = [str]
+  | otherwise = listOfSubStrings str
+  where
+    listOfSubStrings someStr
+      | fromStringToInt someStr <= n = [someStr]
+      | otherwise = listOfSubStrings left ++ listOfSubStrings right
+      where
+        (left, right) = C.splitAt (C.length someStr `div` 2) someStr

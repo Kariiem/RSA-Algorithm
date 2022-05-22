@@ -1,8 +1,9 @@
 module Server where
 
-import Control.Monad
 import qualified ByteStringUtils as C
+import Control.Monad
 import Network.Socket
+import RSA
 import System.IO
 
 main = createSocket 8080
@@ -27,17 +28,21 @@ runConn (sock, _) = do
 
   pubKey <- C.hGetLine hdl
   C.putStrLn pubKey
+  let (e, n) = (read $ C.unpack pubKey) :: Key
 
-  readTerminalWriteSocketLooop hdl
+  readTerminalWriteSocketLooop hdl (e, n)
 
   hClose hdl
 
-readTerminalWriteSocketLooop hdl = do
+readTerminalWriteSocketLooop :: Handle -> Key -> IO ()
+readTerminalWriteSocketLooop hdl (e, n) = do
   str <- C.getLine
   if str /= "quit"
     then do
-      C.hPutStrLn hdl str
-      readTerminalWriteSocketLooop hdl
+      let plainTexts = C.processPlainText str n
+      let ciphers = map (\p -> encrypt p e n) plainTexts
+      mapM_ (C.hPutStrLn hdl) ciphers
+      readTerminalWriteSocketLooop hdl (e, n)
     else do
       C.hPutStrLn hdl str
       C.putStrLn "quiting connection ..."
