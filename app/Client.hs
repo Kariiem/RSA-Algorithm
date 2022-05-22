@@ -29,8 +29,11 @@ readQ nbits p = do
   if ans /= "n"
     then
       let num = read ans
-       in if num /= p && isPrime num
-            then return num
+       in if isPrime num
+            then
+              if num == p
+                then putStrLn "p & q cannot be equal chooes another q." >> readQ nbits p
+                else return num
             else putStrLn "entered number is not a prime." >> readQ nbits p
     else return q
 
@@ -42,9 +45,12 @@ readE p q = do
   if ans /= "n"
     then
       let num = read ans
-       in if 1 < num && num < phi && gcd num phi == 1
-            then return num
-            else putStrLn "entered number is not coprime with phi of n" >> readE p q
+       in if not (1 < num && num < phi)
+            then putStrLn "e must satisfy 1 < e < phi(n)" >> readE p q
+            else
+              if gcd num phi == 1
+                then return num
+                else putStrLn "entered number is not coprime with" >> C.putStr (C.toByteString phi) >> readE p q
     else return $ genCoprime phi
 
 processInput :: IO (Key, Key)

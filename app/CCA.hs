@@ -30,5 +30,5 @@ choseCiphertextAttack = do
   let original = C.fromIntToString $ (inverseR * C.fromStringToInt y) `rem` n
   putStr "original text = " >> C.putStrLn original
   if original == plaintext
-    then putStrLn "Voila, now Eve have the original plaintext"
+    then putStrLn "Voila, now Eve has the original plaintext"
     else putStrLn "this chosen ciphertext attack should have succeded"
