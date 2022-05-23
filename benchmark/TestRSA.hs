@@ -6,7 +6,7 @@ import Primes
 import RSA
 import TimeIt
 
-numPasses = 20
+numPasses = 1
 
 maxKeysSize = 2048
 

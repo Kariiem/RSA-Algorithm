@@ -18,7 +18,7 @@ bruteforce n = go $ integerSquareRoot n
     go x = if n `rem` x == 0 then (x, n `div` x) else go (x -1)
 
 benchMarkBruteforce :: [(Int, (Integer, Integer))]
-benchMarkBruteforce = zip [10 .. maximumKeySize] [bruteforce (p * q) | k <- [10 .. maximumKeySize], let (p, q) = genPrimePairs k]
+benchMarkBruteforce = zip [10 .. maximumKeySize] [n `deepseq` bruteforce n | k <- [10 .. maximumKeySize], let (p, q) = genPrimePairs k, let n = p * q]
 
 -- >>>bruteforce 9
 -- (3,3)
